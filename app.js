@@ -1,4 +1,5 @@
 let router = require("./router.js")
+let view = require('./renderer.js')
 
 let http = require('http');
 let http2 = require('http');
@@ -13,6 +14,7 @@ http.createServer(function (request, response) {
 
     router.home(request, response);
     router.user(request, response);
+    view.view('./views/header.html', [], []);
 }).listen(3000, '192.168.1.140');
 console.log('server running at http://192.168.1.140:3000/ ');
 
