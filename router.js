@@ -1,4 +1,5 @@
 let Profile = require("./profile.js");
+let view = require('./renderer.js')
 
 
 
@@ -7,20 +8,23 @@ let Profile = require("./profile.js");
 //handle HTTP route GET /  and POST / 
 function home(request, response) {
     if (request.url === "/") {
-        response.writeHead(200, { 'Content-Type': 'text/plain' });
-        response.write("Header\n");
-        response.write("Search\n");
-        response.end('Footer\n');
+        response.writeHead(200, { 'Content-Type': 'text/html' });
+        view.view("header", {}, response);
+        view.view("search", {}, response);
+        view.view("footer", {}, response);
+
+        response.end();
     }
 }
 
 //Handle HTTP rouite GET /:username 
 
 function user(request, response) {
+
     let username = request.url.replace("/", "");
     if (username.length) {
-        response.writeHead(200, { 'Content-Type': 'text/plain' });
-        response.write("Header\n");
+        response.writeHead(200, { 'Content-Type': 'text/html' });
+        view.view("header", {}, response);
 
         //get JSON from API call
         let studentProfile = new Profile("/profiles/" + username);
@@ -37,13 +41,18 @@ function user(request, response) {
             }
             //simple reponse
             response.write(values.username + " has " + values.badges + " badges \n");
-            response.end('Footer\n');
+            view.view("profile", values, response)
+            view.view("footer", {}, response);
+
+            response.end();
         })
 
         studentProfile.on("error", function (error) {
             //show error
-            response.write(error.message + '\n');
-            response.end('Footer\n');
+            view.view("error", {}, response);
+            view.view("search", {}, response);
+            view.view("footer", {}, response);
+            response.end();
         });
 
     }
